@@ -4,148 +4,93 @@
 (require 'cl-lib)
 (require 'ox)
 (require 'ox-publish)
+(require 'ox-latex)
 
-;; Get all used ox-latex backend args
-;; Беру все используемые ox-latex backend параметры
 
-(org-export-define-backend 'latex
-  '((bold . org-latex-bold)
-    (center-block . org-latex-center-block)
-    (clock . org-latex-clock)
-    (code . org-latex-code)
-    (drawer . org-latex-drawer)
-    (dynamic-block . org-latex-dynamic-block)
-    (entity . org-latex-entity)
-    (example-block . org-latex-example-block)
-    (export-block . org-latex-export-block)
-    (export-snippet . org-latex-export-snippet)
-    (fixed-width . org-latex-fixed-width)
-    (footnote-definition . org-latex-footnote-definition)
-    (footnote-reference . org-latex-footnote-reference)
-    (headline . org-latex-headline)
-    (horizontal-rule . org-latex-horizontal-rule)
-    (inline-src-block . org-latex-inline-src-block)
-    (inlinetask . org-latex-inlinetask)
-    (italic . org-latex-italic)
-    (item . org-latex-item)
-    (keyword . org-latex-keyword)
-    (latex-environment . org-latex-latex-environment)
-    (latex-fragment . org-latex-latex-fragment)
-    (line-break . org-latex-line-break)
-    (link . org-latex-link)
-    (node-property . org-latex-node-property)
-    (paragraph . org-latex-paragraph)
-    (plain-list . org-latex-plain-list)
-    (plain-text . org-latex-plain-text)
-    (planning . org-latex-planning)
-    (property-drawer . org-latex-property-drawer)
-    (quote-block . org-latex-quote-block)
-    (radio-target . org-latex-radio-target)
-    (section . org-latex-section)
-    (special-block . org-latex-special-block)
-    (src-block . org-latex-src-block)
-    (statistics-cookie . org-latex-statistics-cookie)
-    (strike-through . org-latex-strike-through)
-    (subscript . org-latex-subscript)
-    (superscript . org-latex-superscript)
-    (table . org-latex-table)
-    (table-cell . org-latex-table-cell)
-    (table-row . org-latex-table-row)
-    (target . org-latex-target)
-    (template . org-latex-template)
-    (timestamp . org-latex-timestamp)
-    (underline . org-latex-underline)
-    (verbatim . org-latex-verbatim)
-    (verse-block . org-latex-verse-block)
-    ;; Pseudo objects and elements.
-    (latex-math-block . org-latex-math-block)
-    (latex-matrices . org-latex-matrices))
-  :menu-entry
-  '(?l "Export to GOST/Экспортировать по ГОСТу"
-       ((?w "As 7.32-2017" org-latex-export-as-latex)
-	;;(?e "As " org-latex-export-to-latex)
-	;;(?r "As PDF file" org-latex-export-to-pdf)
-	;;(?t "As PDF file and open"
-	   ;; (lambda (a s v b)
-	    ;;  (if a (org-latex-export-to-pdf t s v b)
-		;; (org-open-file (org-latex-export-to-pdf nil s v b)))))))
-  ;; :filters-alist '((:filter-options . org-latex-math-block-options-filter)
-  ;; 		   (:filter-paragraph . org-latex-clean-invalid-line-breaks)
-  ;; 		   (:filter-parse-tree org-latex-math-block-tree-filter
-  ;; 				       org-latex-matrices-tree-filter
-  ;; 				       org-latex-image-link-filter)
-  ;; 		   (:filter-verse-block . org-latex-clean-invalid-line-breaks))
-  :options-alist
-  '((:latex-class "LATEX_CLASS" nil org-latex-default-class t)
-    (:latex-class-options "LATEX_CLASS_OPTIONS" nil nil t)
-    (:latex-header "LATEX_HEADER" nil nil newline)
-    (:latex-header-extra "LATEX_HEADER_EXTRA" nil nil newline)
-    (:description "DESCRIPTION" nil nil parse)
-    (:keywords "KEYWORDS" nil nil parse)
-    (:subtitle "SUBTITLE" nil nil parse)
-    ;; Other variables.
-    (:latex-active-timestamp-format nil nil org-latex-active-timestamp-format)
-    (:latex-caption-above nil nil org-latex-caption-above)
-    (:latex-classes nil nil org-latex-classes)
-    (:latex-default-figure-position nil nil org-latex-default-figure-position)
-    (:latex-default-table-environment nil nil org-latex-default-table-environment)
-    (:latex-default-quote-environment nil nil org-latex-default-quote-environment)
-    (:latex-default-table-mode nil nil org-latex-default-table-mode)
-    (:latex-diary-timestamp-format nil nil org-latex-diary-timestamp-format)
-    (:latex-engraved-options nil nil org-latex-engraved-options)
-    (:latex-engraved-preamble nil nil org-latex-engraved-preamble)
-    (:latex-engraved-theme "LATEX_ENGRAVED_THEME" nil org-latex-engraved-theme)
-    (:latex-footnote-defined-format nil nil org-latex-footnote-defined-format)
-    (:latex-footnote-separator nil nil org-latex-footnote-separator)
-    (:latex-format-drawer-function nil nil org-latex-format-drawer-function)
-    (:latex-format-headline-function nil nil org-latex-format-headline-function)
-    (:latex-format-inlinetask-function nil nil org-latex-format-inlinetask-function)
-    (:latex-hyperref-template nil nil org-latex-hyperref-template t)
-    (:latex-image-default-scale nil nil org-latex-image-default-scale)
-    (:latex-image-default-height nil nil org-latex-image-default-height)
-    (:latex-image-default-option nil nil org-latex-image-default-option)
-    (:latex-image-default-width nil nil org-latex-image-default-width)
-    (:latex-images-centered nil nil org-latex-images-centered)
-    (:latex-inactive-timestamp-format nil nil org-latex-inactive-timestamp-format)
-    (:latex-inline-image-rules nil nil org-latex-inline-image-rules)
-    (:latex-link-with-unknown-path-format nil nil org-latex-link-with-unknown-path-format)
-    (:latex-src-block-backend nil nil org-latex-src-block-backend)
-    (:latex-listings-langs nil nil org-latex-listings-langs)
-    (:latex-listings-options nil nil org-latex-listings-options)
-    (:latex-listings-src-omit-language nil nil org-latex-listings-src-omit-language)
-    (:latex-minted-langs nil nil org-latex-minted-langs)
-    (:latex-minted-options nil nil org-latex-minted-options)
-    (:latex-prefer-user-labels nil nil org-latex-prefer-user-labels)
-    (:latex-subtitle-format nil nil org-latex-subtitle-format)
-    (:latex-subtitle-separate nil nil org-latex-subtitle-separate)
-    (:latex-table-scientific-notation nil nil org-latex-table-scientific-notation)
-    (:latex-tables-booktabs nil nil org-latex-tables-booktabs)
-    (:latex-tables-centered nil nil org-latex-tables-centered)
-    (:latex-text-markup-alist nil nil org-latex-text-markup-alist)
-    (:latex-title-command nil nil org-latex-title-command)
-    (:latex-toc-command nil nil org-latex-toc-command)
-    (:latex-compiler "LATEX_COMPILER" nil org-latex-compiler)
-    ;; Redefine regular options.
-    (:date "DATE" nil "\\today" parse)))
-
-(defun my-latex-filter-continue-string (text backend info)
-  "Ensure \"_\" are properly handled in LaTeX export."
-  (progn
-  (if (org-export-derived-backend-p backend 'latex)
-      (replace-regexp-in-string "Continued on next page" "Продолжение на следующей странице" (replace-regexp-in-string "Continued from previous page" "Продолжение с предыдущей страницы" text))
-      (text))
-  ))
-       
-(defun org-latex-export-to-pdf
-    (&optional async subtreep visible-only body-only ext-plist)
-  "Settings for export"
-  ;; Save default value in varibales to long session
-  (setq temp-org-export-filter-table-functions org-export-filter-table-functions)
-  
-  (add-to-list 'org-export-filter-table-functions
-               'my-latex-filter-continue-string)
-  
+;; Создаём потомка экспорта ox-latex
+(org-export-define-derived-backend 'ox-gost 'latex
+  ;; Объявляем меню
+  :menu-entry '(?g "Export to GOST 7.32" org-gost-export-to-pdf)
+  :filters-alist '(:filter-table . gost-filter-table)
+  ;; TODO: NOT WORKED
+  :options-alist '((:latex-classes nil nil org-gost-classes nil))
   )
+
+(defun gost-filter-table (text backend info)
+  (replace-regexp-in-string "Continued on next page" "Продолжение на следующей странице" (replace-regexp-in-string "Continued from previous page" "Продолжение с предыдущей страницы" text))
+      (text))
+
+;; Просто экспортируем файл в pdf
+(defun org-gost-export-to-pdf
+    (&optional async subtreep visible-only body-only ext-plist)
+  "Export current buffer to GOST 7.32 file"
+  (interactive)
+    (let ((outfile (org-export-output-file-name ".tex" subtreep)))
+      (org-export-to-file 'latex outfile
+        async subtreep visible-only body-only ext-plist
+        #'org-latex-compile)))
+
+(setq org-gost-classes
+  '(("extarticle" "\\documentclass[14pt]{extarticle}"
+	  ("\\section{%s}" . "\\section*{%s}")
+	  ("\\subsection{%s}" . "\\subsection*{%s}")
+	  ("\\subsubsection{%s}" . "\\subsubsection{%s}")
+	  ("\\paragraph{%s}" . "\\paragraph*{%s}")
+	  ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))
+	 ("article" "\\documentclass[11pt]{article}"
+	  ("\\section{%s}" . "\\section*{%s}")
+	  ("\\subsection{%s}" . "\\subsection*{%s}")
+	  ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+	  ("\\paragraph{%s}" . "\\paragraph*{%s}")
+	  ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))
+	 ("report" "\\documentclass[11pt]{report}"
+	  ("\\part{%s}" . "\\part*{%s}")
+	  ("\\chapter{%s}" . "\\chapter*{%s}")
+	  ("\\section{%s}" . "\\section*{%s}")
+	  ("\\subsection{%s}" . "\\subsection*{%s}")
+	  ("\\subsubsection{%s}" . "\\subsubsection*{%s}"))
+	 ("book" "\\documentclass[11pt]{book}"
+	  ("\\part{%s}" . "\\part*{%s}")
+	  ("\\chapter{%s}" . "\\chapter*{%s}")
+	  ("\\section{%s}" . "\\section*{%s}")
+	  ("\\subsection{%s}" . "\\subsection*{%s}")
+	  ("\\subsubsection{%s}" . "\\subsubsection*{%s}"))))
+
+(setq org-gost-title-command (concat
+			       "\\begin{titlepage}\n\n"
+			       "\\centering{ГУАП}\n\n"
+			       "\\vspace{32pt}\n\n"
+			       "\\centering{ФАКУЛЬТЕТ СРЕДНЕГО ПРОФЕССИОНАЛЬНОГО ОБРАЗОВАНИЯ}\n\n"
+			       "\\vspace{60pt}\n\n"
+			       "\\raggedright{ОТЧЕТ \\\\
+ЗАЩИЩЕН С ОЦЕНКОЙ}\n"
+			       "\\vspace{14pt}\n\n"
+			       "\\raggedright{ПРЕПОДАВАТЕЛЬ}\n\n"
+			       "\\vspace{12pt}\n\n"
+			       "\\begin{tabularx}{\\textwidth}{ >{\\centering\\arraybackslash}X >{\\centering\\arraybackslash}X >{\\centering\\arraybackslash}X }\n"
+			       "\t преподаватель & & %d \\\\ \n"
+			       "\t \\hrulefill & \\hrulefill & \\hrulefill \\\\ \n"
+			       "\\footnotesize{должность, уч. степень, звание} & \\footnotesize{подпись, дата} & \\footnotesize{инициалы, фамилия} \\\\ \n"
+			       "\\end{tabularx} \n \n"
+			       "\\vspace{48pt} \n\n"
+			       "\\centering{ОТЧЕТЫ О ЛАБОРАТОРНЫХ РАБОТАХ} \n\n"
+			       "\\vspace{76pt} \n\n"
+			       "\\centering{По дисциплине: %t} \n\n"
+			       "\\vspace*{\\fill} \n\n"
+			       "\\raggedright{РАБОТУ ВЫПОЛНИЛ} \n\n"
+			       "\\vspace{10pt} \n\n"
+			       "\\begin{tabularx}{\\textwidth}{>{\\raggedright\\arraybackslash}X  >{\\centering\\arraybackslash}X >{\\centering\\arraybackslash}X >{\\centering\\arraybackslash}X }\n"
+			       "\t СТУДЕНТ ГР. № & 021к & & %a \\\\ \n"
+			       "\t & \\hrulefill & \\hrulefill & \\hrulefill \\\\ \n"
+			       "\t &  & \\footnotesize{подпись, дата} & \\footnotesize{инициалы, фамилия} \\\\ \n"
+			       "\\end{tabularx} \n \n"
+			       "\\vspace*{\\fill} \n\n"
+			       "\\centering{Санкт-Петербург \\the\\year} \n\n"
+			       "\\end{titlepage}\n"
+			       ))
   
 
 
+(setq org-gost-toc-command "\n\\tableofcontents \\clearpage\n")
+
+;; (defcustom org-gost-listings 'minted)

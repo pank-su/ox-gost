@@ -19,13 +19,21 @@
 		   (:latex-minted-options nil nil org-gost-minted-options)
 		   (:latex-default-table-environment nil nil org-gost-default-table-environment)
 		   (:latex-header nil nil org-gost-latex-headers newline)
+		   (:latex-src-block-backend nil nil org-gost-src-block-backend)
+		   (:teacher "TEACHER" nil org-gost-teacger newline)
+		   (:education-organization "EDUORG" nil org-gost-education-organization)
+		   (:type-of-work: "TYPE" nil org-gost-type-work)
 		   )
   )
 
+(defcustom org-gost-education-organization "Образовательная организация")
+(defcustom org-gost-teacher "Преподаватель" )
+(defcustom org-gost-type-work "Тип работы" )
+
+
 (defun gost-filter-table (text backend info)
   "Функция исправления таблички"
-  (replace-regexp-in-string "Continued on next page" "Продолжение на следующей странице" (replace-regexp-in-string "Continued from previous page" "Продолжение с предыдущей страницы" text))
-      (text))
+  (replace-regexp-in-string "Continued on next page" "Продолжение на следующей странице" (replace-regexp-in-string "Continued from previous page" "Продолжение с предыдущей страницы" text)))
 
 ;; Просто экспортируем файл в pdf
 (defun org-gost-export-to-pdf
@@ -102,9 +110,7 @@
 
 ;; Надо как-то исправить
 (setq org-gost-latex-headers 
-      "\\usepackage[utf8x]{inputenc}
-\\usepackage{minted}
-\\usepackage[T2A]{fontenc}
+      "\\usepackage{minted}
 \\usepackage[russian]{babel}
 \\usepackage{tempora}
 \\usepackage{geometry}
@@ -138,14 +144,20 @@
 \\usepackage{lscape}"
 			        )
 
-(setq org-gost-pdf-process
+(setq org-latex-pdf-process
       '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
         "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
 	"pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
+
 
 (setq
    org-gost-minted-options '(("breaklines" "true")
 	 ("float" "t")
 	 ("breakanywhere" "true")
 	 ("fontsize" "\\footnotesize"))
-    org-gost-default-table-environment "longtable")
+   org-gost-default-table-environment "longtable"
+   org-gost-src-block-backend 'minted)
+
+;;;###autoload
+
+(provide 'ox-gost)

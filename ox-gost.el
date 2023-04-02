@@ -1,5 +1,4 @@
 (require 'org-macs)
-(org-assert-version)
 
 (require 'cl-lib)
 (require 'ox)
@@ -20,15 +19,27 @@
 		   (:latex-default-table-environment nil nil org-gost-default-table-environment)
 		   (:latex-header nil nil org-gost-latex-headers newline)
 		   (:latex-src-block-backend nil nil org-gost-src-block-backend)
+		   ;; Мои собственные параметры
+		   ;; Будут использоваться в будующем 
 		   (:teacher "TEACHER" nil org-gost-teacger newline)
-		   (:education-organization "EDUORG" nil org-gost-education-organization)
-		   (:type-of-work: "TYPE" nil org-gost-type-work)
+		   (:education-organization "EDUORG" nil org-gost-education-organization parse)
+		   (:type-of-work: "TYPE" nil org-gost-type-work parse)
 		   )
   )
 
-(defcustom org-gost-education-organization "Образовательная организация")
-(defcustom org-gost-teacher "Преподаватель" )
-(defcustom org-gost-type-work "Тип работы" )
+(defcustom org-gost-education-organization "Образовательная организация"
+  "Укзывается название организациии для титульного листа"
+  :group 'org-gost
+  :type 'string)
+
+(defcustom org-gost-teacher "Преподаватель"
+  "Преподаватели для титульного листа"
+  :group 'org-gost
+  :type 'string)
+(defcustom org-gost-type-work "Тип работы"
+  "Тип работы для титульного лица"
+  :group 'org-gost
+  :type 'string)
 
 
 (defun gost-filter-table (text backend info)

@@ -21,10 +21,14 @@
 		   (:latex-header nil nil org-gost-latex-headers newline)
 		   (:latex-src-block-backend nil nil org-gost-src-block-backend)
 		   ;; Мои собственные параметры
-		   ;; Будут использоваться в будующем 
 		   (:teacher "TEACHER" nil org-gost-teacher newline)
+		   (:teacher-position "POSITION" nil org-gost-teacher-position newline)
 		   (:education-organization "EDUORG" nil org-gost-education-organization parse)
-		   (:type-of-work: "TYPE" nil org-gost-type-work parse)
+		   (:type-of-work "TYPE" nil org-gost-type-work parse)
+		   (:department "DEPARTMENT" nil org-gost-department parse)
+		   (:city "CITY" nil org-gost-city parse)
+		   (:group-name "GROUP" nil org-gost-group)
+		   
 		   )
   :translate-alist '((template . org-gost-template))
   )
@@ -34,21 +38,71 @@
   :group 'org-gost
   :type 'string)
 
-(defcustom org-gost-teacher "Преподаватель"
+(defcustom org-gost-teacher ""
   "Преподаватели для титульного листа"
   :group 'org-gost
   :type 'string)
-(defcustom org-gost-type-work "Тип работы"
+(defcustom org-gost-type-work "ОТЧЕТЫ О ЛАБОРАТОРНЫХ РАБОТАХ"
   "Тип работы для титульного лица"
   :group 'org-gost
   :type 'string)
+
+(defcustom org-gost-department "Факультет или департамент"
+  "Факультет для титульного лица"
+  :group 'org-gost
+  :type 'string)
+
+(defcustom org-gost-teacher-position "преподаватель"
+  "Факультет для титульного лица"
+  :group 'org-gost
+  :type 'string)
+
+(defcustom org-gost-city "Город"
+  "Город для титульного листа"
+  :group 'org-gost
+  :type 'string)
+
+(defcustom org-gost-group "000"
+  "Наименование группы для титульного листа"
+  :group 'org-gost
+  :type 'string)
+
+(defun org-gost--format-spec (info)
+  "Create a format-spec for document meta-data.
+INFO is a plist used as a communication channel."
+  (let ((language (let* ((lang (plist-get info :language))
+		         (plist (cdr
+			         (assoc lang org-latex-language-alist))))
+                    ;; Here the actual name of the LANGUAGE or LANG is used.
+		    (or (plist-get plist :lang-name)
+		        lang))))
+    `((?a . ,(org-export-data (plist-get info :author) info))
+      (?t . ,(org-export-data (plist-get info :title) info))
+      (?s . ,(org-export-data (plist-get info :subtitle) info))
+      (?k . ,(org-export-data (org-latex--wrap-latex-math-block
+			       (plist-get info :keywords) info)
+			      info))
+      (?d . ,(org-export-data (plist-get info :teacher) info))
+      (?e . ,(org-export-data (plist-get info :education-organization) info))
+      (?T . ,(org-export-data (plist-get info :type-of-work) info))
+      (?f . ,(org-export-data (plist-get info :department) info))
+      (?p . ,(org-export-data (plist-get info :teacher-position) info))
+      (?C . ,(org-export-data (plist-get info :city) info))
+      (?g . ,(org-export-data (plist-get info :group-name) info))
+
+
+      
+      (?c . ,(plist-get info :creator))
+      (?l . ,language)
+      (?L . ,(capitalize language))
+      (?D . ,(org-export-data (org-export-get-date info) info)))))
 
 (defun org-gost-template (contents info)
   "Return complete document string after LaTeX conversion.
 CONTENTS is the transcoded contents string.  INFO is a plist
 holding export options."
   (let ((title (org-export-data (plist-get info :title) info))
-	(spec (org-latex--format-spec info)))
+	(spec (org-gost--format-spec info)))
     (concat
      ;; Time-stamp.
      (and (plist-get info :time-stamp-file)
@@ -165,9 +219,9 @@ holding export options."
 
 (setq org-gost-title-command (concat
 			       "\\begin{titlepage}\n\n"
-			       "\\centering{ГУАП}\n\n"
+			       "\\centering{%e}\n\n"
 			       "\\vspace{32pt}\n\n"
-			       "\\centering{ФАКУЛЬТЕТ СРЕДНЕГО ПРОФЕССИОНАЛЬНОГО ОБРАЗОВАНИЯ}\n\n"
+			       "\\centering{%f}\n\n"
 			       "\\vspace{60pt}\n\n"
 			       "\\raggedright{ОТЧЕТ \\\\
 ЗАЩИЩЕН С ОЦЕНКОЙ}\n"
@@ -175,24 +229,24 @@ holding export options."
 			       "\\raggedright{ПРЕПОДАВАТЕЛЬ}\n\n"
 			       "\\vspace{12pt}\n\n"
 			       "\\begin{tabularx}{\\textwidth}{ >{\\centering\\arraybackslash}X >{\\centering\\arraybackslash}X >{\\centering\\arraybackslash}X }\n"
-			       "\t преподаватель & & %d \\\\ \n"
+			       "\t %p & & %d \\\\ \n"
 			       "\t \\hrulefill & \\hrulefill & \\hrulefill \\\\ \n"
 			       "\\footnotesize{должность, уч. степень, звание} & \\footnotesize{подпись, дата} & \\footnotesize{инициалы, фамилия} \\\\ \n"
 			       "\\end{tabularx} \n \n"
 			       "\\vspace{48pt} \n\n"
-			       "\\centering{ОТЧЕТЫ О ЛАБОРАТОРНЫХ РАБОТАХ} \n\n"
+			       "\\centering{%T} \n\n"
 			       "\\vspace{76pt} \n\n"
 			       "\\centering{По дисциплине: %t} \n\n"
 			       "\\vspace*{\\fill} \n\n"
 			       "\\raggedright{РАБОТУ ВЫПОЛНИЛ} \n\n"
 			       "\\vspace{10pt} \n\n"
 			       "\\begin{tabularx}{\\textwidth}{>{\\raggedright\\arraybackslash}X  >{\\centering\\arraybackslash}X >{\\centering\\arraybackslash}X >{\\centering\\arraybackslash}X }\n"
-			       "\t СТУДЕНТ ГР. № & 021к & & %a \\\\ \n"
+			       "\t СТУДЕНТ ГР. № & %g & & %a \\\\ \n"
 			       "\t & \\hrulefill & \\hrulefill & \\hrulefill \\\\ \n"
 			       "\t &  & \\footnotesize{подпись, дата} & \\footnotesize{инициалы, фамилия} \\\\ \n"
 			       "\\end{tabularx} \n \n"
 			       "\\vspace*{\\fill} \n\n"
-			       "\\centering{Санкт-Петербург \\the\\year} \n\n"
+			       "\\centering{%C \\the\\year} \n\n"
 			       "\\end{titlepage}\n"
 			       ))
   
@@ -233,8 +287,6 @@ holding export options."
 \\usepackage{indentfirst}
 \\usepackage{multirow}
 \\usepackage{lscape}
-\\usepackage{xcolor}
-\\usepackage{fvextra}
 " )
 
 

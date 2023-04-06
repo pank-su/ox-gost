@@ -1,0 +1,82 @@
+* Введение в ox-gost
+
+Что такое ox-gost?
+
+=ox-gost= - это экспортер, который позволяет получать на выходе оформленный pdf файл по ГОСТу 7.32.
+
+Что же изменяется:
+
+1. Титульный лист
+
+   Настраиваемы титульный лист, у которого вы можете отредактировать все поля, а именно:
+   - =org-gost-teacher= - имя преподавателя
+
+     Для документа: =#+TEACHER=
+
+   - =org-gost-teacher-position= - должность преподавателя
+
+     Для документа: =#+POSITION=
+
+   - =org-gost-education-organization= - наименование образовательной организациии
+
+     Для документа: =#+EDUORG=
+
+   - =org-gost-type-work= - тип работы
+
+     Для документа: =#+TYPE=
+
+   - org-gost-department - факултет или департамент
+
+     Для документа: =#+DEPARTMENT=
+
+   - org-gost-city - город
+
+     Для документа: =#+CITY=
+
+   - org-gost-group - наименование группы
+
+     Для документа: =#+GROUP=
+
+2. Таблицы
+
+   Используют окружение =longtable=
+
+3. Код
+
+   Использует engraved-faces
+
+4. Содержание
+
+   Использует разделитель точки
+
+5. Авто-подписи
+
+   Согласно стандарту
+
+
+
+** Установка
+
+*Требуется engrave-faces*
+
+Через =use-package:=
+
+
+
+#+begin_src emacs-lisp
+  ;; Установка и настройка engrave-faces
+  (use-package engrave-faces
+      :config (setq engrave-faces-preset-styles (engrave-faces-generate-preset)
+		 )
+  )
+
+  (use-package ox-gost
+     :load-path "./ox-gost" ;; указвывай путь
+     ;; настройка 
+     :config (setq org-gost-education-organization "ГУАП"
+		org-gost-department "ФАКУЛЬТЕТ СРЕДНЕГО ПРОФЕССИОНАЛЬНОГО ОБРАЗОВАНИЯ"
+		org-gost-teacher-position "преподаватель"
+		org-gost-city "Санкт-Петербург"
+		org-gost-group "021к"))
+
+#+end_src

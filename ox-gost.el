@@ -12,6 +12,7 @@
   :menu-entry '(?g "Export to GOST 7.32" org-gost-export-to-pdf)
   :filters-alist '((:filter-table . gost-filter-table))
   :options-alist '(
+		   (:latex-compiler "LATEX_COMPILER" nil org-gost-compiler)
 		   (:latex-classes nil nil org-gost-classes)
 		   (:latex-toc-command nil nil org-gost-toc-command)
 		   (:latex-title-command nil nil org-gost-title-command)
@@ -256,8 +257,11 @@ holding export options."
 
 ;; Надо как-то исправить
 (setq org-gost-latex-headers 
-      "\\usepackage[russian]{babel}
-\\usepackage{tempora}
+      "\\defaultfontfeatures{Ligatures={TeX},Renderer=Basic} 
+\\setmainfont[Ligatures={TeX,Historic}]{Times New Roman}
+\\setsansfont{Comic Sans MS}                   
+\\setmonofont{Courier New}
+\\usepackage[russian]{babel}
 \\usepackage{geometry}
 \\geometry{a4paper, left=30mm, top=20mm, bottom=20mm, right=15mm }
 \\usepackage{graphicx}
@@ -266,6 +270,7 @@ holding export options."
 \\usepackage{listings}
 \\usepackage{float}
 \\usepackage{setspace}
+\\usepackage{unicode-math}
 \\usepackage{tabularx}
 \\usepackage{longtable}
 \\usepackage{titlesec}
@@ -280,6 +285,7 @@ holding export options."
 \\usepackage{caption}
 \\DeclareCaptionLabelSeparator{custom}{ -- }
 \\captionsetup[figure]{name=Рисунок, labelsep=custom, font={onehalfspacing}, justification=centering}
+\\captionsetup[listing]{name=Код, position=above}
 \\usepackage{ragged2e}
 \\justifying
 \\setlength\\parindent{1.25cm}
@@ -287,6 +293,7 @@ holding export options."
 \\usepackage{indentfirst}
 \\usepackage{multirow}
 \\usepackage{lscape}
+\\linespread{1.3}
 " )
 
 
@@ -297,6 +304,8 @@ holding export options."
 	 ("fontsize" "\\footnotesize"))
    org-gost-default-table-environment "longtable"
    org-gost-src-block-backend 'engraved)
+
+(setq org-gost-compiler "xelatex")
 
 ;;;###autoload
 

@@ -287,6 +287,8 @@ holding export options."
 \\usepackage{indentfirst}
 \\usepackage{multirow}
 \\usepackage{lscape}
+\\renewcommand{\\labelitemi}{\\textsc{--}}
+
 " )
 
 

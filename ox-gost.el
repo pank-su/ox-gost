@@ -25,6 +25,7 @@
 		   (:teacher-position "POSITION" nil org-gost-teacher-position newline)
 		   (:education-organization "EDUORG" nil org-gost-education-organization parse)
 		   (:type-of-work "TYPE" nil org-gost-type-work parse)
+		   (:course "COURSE" nil  org-gost-course-name parse)
 		   (:department "DEPARTMENT" nil org-gost-department parse)
 		   (:city "CITY" nil org-gost-city parse)
 		   (:group-name "GROUP" nil org-gost-group)
@@ -42,7 +43,7 @@
   "Преподаватели для титульного листа"
   :group 'org-gost
   :type 'string)
-(defcustom org-gost-type-work "ОТЧЕТЫ О ЛАБОРАТОРНЫХ РАБОТАХ"
+(defcustom org-gost-type-work "ОТЧЕТ О ЛАБОРАТОРНОЙ РАБОТЕ"
   "Тип работы для титульного лица"
   :group 'org-gost
   :type 'string)
@@ -59,6 +60,11 @@
 
 (defcustom org-gost-city "Город"
   "Город для титульного листа"
+  :group 'org-gost
+  :type 'string)
+
+(defcustom org-gost-course-name ""
+  "Название курса"
   :group 'org-gost
   :type 'string)
 
@@ -85,6 +91,7 @@ INFO is a plist used as a communication channel."
       (?d . ,(org-export-data (plist-get info :teacher) info))
       (?e . ,(org-export-data (plist-get info :education-organization) info))
       (?T . ,(org-export-data (plist-get info :type-of-work) info))
+      (?u . ,(org-export-data (plist-get info :course) info))
       (?f . ,(org-export-data (plist-get info :department) info))
       (?p . ,(org-export-data (plist-get info :teacher-position) info))
       (?C . ,(org-export-data (plist-get info :city) info))
@@ -218,7 +225,8 @@ holding export options."
 	  ("\\subsubsection{%s}" . "\\subsubsection*{%s}"))))
 
 (setq org-gost-title-command (concat
-			       "\\begin{titlepage}\n\n"
+			       "\\begin{small}\n\\begin{titlepage}\n\n"
+			       "\\linespread{1}\\selectfont"
 			       "\\centering{%e}\n\n"
 			       "\\vspace{32pt}\n\n"
 			       "\\centering{%f}\n\n"
@@ -235,19 +243,21 @@ holding export options."
 			       "\\end{tabularx} \n \n"
 			       "\\vspace{48pt} \n\n"
 			       "\\centering{%T} \n\n"
-			       "\\vspace{76pt} \n\n"
-			       "\\centering{По дисциплине: %t} \n\n"
+			       "\\vspace{40pt} \n\n"
+			       "\\centering{%t} \n\n"
+			       "\\vspace{40pt} \n\n"
+			       "\\centering{По курсу: %u} \n\n"
 			       "\\vspace*{\\fill} \n\n"
 			       "\\raggedright{РАБОТУ ВЫПОЛНИЛ} \n\n"
 			       "\\vspace{10pt} \n\n"
 			       "\\begin{tabularx}{\\textwidth}{>{\\raggedright\\arraybackslash}X  >{\\centering\\arraybackslash}X >{\\centering\\arraybackslash}X >{\\centering\\arraybackslash}X }\n"
-			       "\t СТУДЕНТ ГР. № & %g & & %a \\\\ \n"
+			       "СТУДЕНТ ГР. № & %g & & %a \\\\ \n"
 			       "\t & \\hrulefill & \\hrulefill & \\hrulefill \\\\ \n"
 			       "\t &  & \\footnotesize{подпись, дата} & \\footnotesize{инициалы, фамилия} \\\\ \n"
 			       "\\end{tabularx} \n \n"
 			       "\\vspace*{\\fill} \n\n"
 			       "\\centering{%C \\the\\year} \n\n"
-			       "\\end{titlepage}\n"
+			       "\\end{titlepage}\n\\end{small}\n"
 			       ))
   
 
@@ -269,9 +279,9 @@ holding export options."
 \\usepackage{tabularx}
 \\usepackage{longtable}
 \\usepackage{titlesec}
-\\titleformat*{\\section}{\\large\\bfseries}
-\\titleformat*{\\subsection}{\\normalsize\\bfseries}
-\\titleformat*{\\subsubsection}{\\normalsize\\bfseries}
+\\titleformat{\\section}{\\normalsize\\bfseries}{}{1.25cm}{}
+\\titleformat{\\subsection}{\\normalsize\\bfseries}{}{1.25cm}{}
+\\titleformat{\\subsubsection}{\\normalsize\\bfseries}{}{1.25cm}{}
 \\addto\\captionsrussian{\\renewcommand{\\contentsname}{\\centering \\normalsize СОДЕРЖАНИЕ}}
 \\addtocontents{toc}{\\protect\\thispagestyle{empty}}
 \\usepackage{titletoc}
@@ -288,7 +298,12 @@ holding export options."
 \\usepackage{multirow}
 \\usepackage{lscape}
 \\renewcommand{\\labelitemi}{\\textsc{--}}
-
+\\linespread{1.3}
+% Настройка caption для стиля
+\\DeclareCaptionStyle{leftalign}{justification=raggedright}
+\\captionsetup[listing]{style=leftalign, labelsep=custom, name=Листинг} % Правим позицию заголовка для listing
+\\usepackage{enumitem}
+\\setlist[enumerate]{itemindent=1.85cm,leftmargin=0pt}
 " )
 
 
